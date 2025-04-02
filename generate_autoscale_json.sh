@@ -4,13 +4,13 @@ CLUSTER_NAME=
 USERNAME=
 PASSWORD=
 CC_URL=
-INSTALLDIR=/opt/cycle/gridengine
+INSTALLDIR=/opt/cycle/ocs
 RELEVANT_COMPLEXES=slots,slot_type,nodearray,m_mem_free,exclusive
 IDLE_TIMEOUT=300
 OUTPUT_PATH=
 
 function helpmsg(){
-    echo ./generate_autoscale_json.sh --cluster-name CLUSTER --username USER --password PASS --url CYCLECLOUD_URL [--install-dir /opt/cycle/gridengine] [--idle-timoeut $IDLE_TIMEOUT]
+    echo ./generate_autoscale_json.sh --cluster-name CLUSTER --username USER --password PASS --url CYCLECLOUD_URL [--install-dir /opt/cycle/ocs] [--idle-timoeut $IDLE_TIMEOUT]
     exit 1
 }
 

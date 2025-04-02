@@ -3,7 +3,7 @@
 INSTALL_PYTHON3=0
 INSTALL_VIRTUALENV=0
 INSTALL_PIP=0
-INSTALLDIR=/opt/cycle/gridengine
+INSTALLDIR=/opt/cycle/ocs
 VENV=$INSTALLDIR/venv
 OS=$(awk -F= '/^NAME/{print $2}' /etc/os-release | awk '{print tolower($0)}')
 
@@ -109,7 +109,7 @@ cat > $VENV/bin/azge <<EOF
 #!$VENV/bin/python
 import warnings
 warnings.filterwarnings("ignore", message="Please use driver.new_singleton_lock")
-from gridengine.cli import main
+from ocs.cli import main
 main()
 EOF
 chmod +x $VENV/bin/azge
@@ -127,14 +127,14 @@ echo 'azge' installed. A symbolic link was made to /usr/local/bin/azge and /root
 cp logging.conf $INSTALLDIR/
 
 crontab -l > /tmp/current_crontab
-grep -q 'Created by cyclecloud-gridengine install.sh' /tmp/current_crontab
+grep -q 'Created by cyclecloud-ocs install.sh' /tmp/current_crontab
 if [ $? != 0 ]; then
-    echo \# Created by cyclecloud-gridengine install.sh >> /tmp/current_crontab
-    echo '* * * * * . /etc/profile.d/sgesettings.sh && /usr/local/bin/azge autoscale -c /opt/cycle/gridengine/autoscale.json' >> /tmp/current_crontab
+    echo \# Created by cyclecloud-ocs install.sh >> /tmp/current_crontab
+    echo '* * * * * . /etc/profile.d/sgesettings.sh && /usr/local/bin/azge autoscale -c /opt/cycle/ocs/autoscale.json' >> /tmp/current_crontab
     crontab /tmp/current_crontab
 fi
 rm -f /tmp/current_crontab
 
-crontab -l | grep -q 'Created by cyclecloud-gridengine install.sh' && exit 0
+crontab -l | grep -q 'Created by cyclecloud-ocs install.sh' && exit 0
 echo "Could not install cron job for autoscale!" >&2
 exit 1

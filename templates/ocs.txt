@@ -3,10 +3,9 @@
 ## Cluster Configuration File ##
 ################################
 
-[cluster Altair Grid Engine]
+[cluster OCS]
 FormLayout = selectionpanel
 Category = Schedulers
-IconUrl = /static/cloud/cluster/ui/ClusterIcon/altair-icon.png
 
 Autoscale = $Autoscale
 
@@ -20,15 +19,6 @@ Autoscale = $Autoscale
     
         [[[configuration]]]
         
-        [[[configuration]]]
-        ocs.use_external_download = ${ifThenElse(BYOL, false, true)}
-        ocs.demo_base_url = ""
-
-        ocs.make = ge 
-        ocs.version = $GEVersion 
-        ocs.root = $GERoot
-        ocs.remote_prefix = $GERemotePrefix
-
         # For fast spin-up after Deallocate, force an immediate re-converge on boot
         cyclecloud.converge_on_boot = true
 
@@ -46,7 +36,6 @@ Autoscale = $Autoscale
         cluster.identities.default = $ManagedIdentity
 
         [[[cluster-init cyclecloud/ocs:default]]]
-        #[[[cluster-init ocs:default:2.0.0]]]
         Optional = true
 
         [[[volume boot]]]
@@ -84,7 +73,6 @@ Autoscale = $Autoscale
         cyclecloud.mounts.nfs_shared.disabled = ${NFSType != "External"}
 
         [[[cluster-init cyclecloud/ocs:scheduler]]]
-        #[[[cluster-init ocs:scheduler:2.0.0]]]
 
         [[[network-interface eth0]]]
         AssociatePublicIpAddress = $UsePublicNetwork
@@ -137,7 +125,6 @@ Autoscale = $Autoscale
         ocs.colocated = true
 
         [[[cluster-init cyclecloud/ocs:execute]]]
-        #[[[cluster-init ocs:execute:2.0.0]]]
 
         [[[network-interface eth0]]]
         AssociatePublicIpAddress = $ExecuteNodesPublic
@@ -157,7 +144,6 @@ Autoscale = $Autoscale
         ocs.autoscale = $Autoscale
 
         [[[cluster-init cyclecloud/ocs:execute]]]
-        #[[[cluster-init ocs:execute:2.0.0]]]
 
         [[[network-interface eth0]]]
         AssociatePublicIpAddress = $ExecuteNodesPublic
@@ -165,73 +151,13 @@ Autoscale = $Autoscale
 
 [parameters About]
 Order = 1
-    [[parameters About Altair Grid Engine]]
+
+    [[parameters About OCS]]
 
         [[[parameter ocs]]]
         HideLabel = true
         Config.Plugin = pico.widget.HtmlTemplateWidget
-        Config.Template = '''<table role="presentation"> <tr><td> <a> <img width="512" alt="Altair logo" src="static/cloud/cluster/ui/ClusterIcon/altair.png"> </a>  </td></tr> 
-                                <tr><td><big><b>Thank you for trying Altair&#0153 Grid Engine&#0153! </big> </b></td></tr> 
-                                <tr><td><p>Altair Grid Engine&#0153 is the leading implementation of the popular Grid Engine workload scheduling and
-                                         management system used by thousands of customers around the world. Altair Grid Engine helps organizations 
-                                         optimize throughput and performance, share resources more effectively, and improve return on investment (ROI) for a wide 
-                                         variety of applications.</p> </td></tr> 
-                                         <tr> <td> <p>&nbsp;</p> </td></tr> 
-                                         <tr><td><big><b>Let's get started  </big> </b></td></tr>   
-                                         <tr><td> <p> <a href="https://www.altair.com/contact-us/?utm_campaign=CO-HPC-Cloud&utm_source=microsoft.com&utm_medium=apa-partner&utm_content=altair-grid-engine-promotion" > Contact us to get started.</a> 
-                                            We can discuss your applications, answer any Altair Grid Engine questions, and explain commercial licensing 
-                                            options for on-premises and Azure CycleCloud resident clusters. </p></td></tr> 
-                                         <tr><td> <p>&nbsp;</p> </td></tr>  <tr><td><big><b>Optimized for Azure CycleCloud </big> </b></td></tr> 
-                                         <tr><td><p> Altair Grid Engine provides essential cloud-friendly features not found in open-source Grid 
-                                            Engine that help improve workload throughput and simplify management in Azure CycleCloud while 
-                                            providing full compatibility with existing Altair Grid Engine integrations. </p></td></tr> 
-                                         <tr><td> <p>&nbsp;</p> </td></tr> 
-                                         <tr><td><p> With Altair Grid Engine, organizations can get work done faster, use resources more efficiently, 
-                                            and in some cases, reduce cloud costs by shortening the time that clusters are deployed. </p></td></tr> 
-                                         <tr><td><p> Unique Altair Grid Engine features include: <ul> 
-                                            <li>Enhanced scalability throughput</li>
-                                            <li>Advanced container support</li>
-                                            <li>GPU-aware scheduling</li>
-                                            <li>Dynamic cluster re-configuration</li>
-                                            <li>Simplified troubleshooting</li>
-                                            <li>Python SDK / REST API for simplified automation </li>
-                                            <li>Job classes for simplified application management</li>
-                                            <li>Rich scheduling policies</li></ul></p>  </td></tr>
-                                         <tr><td> <p>&nbsp;</p> </td></tr> 
-                                         <tr><td> <p> <big><b>Additional Altair Grid Engine&#0153 Resources: </big> </b></p></td></tr> 
-                                         <tr><td><ul>
-                                            <li><a href="https://www.altair.com/grid-engine/">Altair Grid Engine Product Page </li>
-                                            <li><a href="https://www.altair.com/resource/altair-grid-engine-for-enterprise-class-scheduling-and-optimization">Altair Grid Engine Datasheet </li>
-                                            <li><a href="https://www.altair.com/resourcelibrary/">Altair Development and Release Activity </li></ul> </td></tr></table>'''
-
-        [[[parameter termsnotice]]]
-        HideLabel = true
-        Config.Plugin = pico.widget.HtmlTemplateWidget
-        Config.Template = '''<table> <tr><td> By using this cluster, you are agreeing to the terms of Altair. </td></tr> 
-            <tr><td> <i> TERM SOFTWARE LICENSE AGREEMENT</i> </td></tr> 
-            <tr><td> <a href="https://www.univa.com/resources/files/univa_software_license_agreement.pdf" target="_blank"> 
-                Full Terms and Conditions </a></td></tr>'''
-        Conditions.Hidden = true
-
-        [[[parameter HasAccepted]]]
-        #HideLabel = true
-        ParameterType = HtmlTemplate
-        Config.Template = '''
-        <span style="font-weight: 600; font-style: italic;">Please agree to the terms to continue</span>
-        '''
-        
-        Conditions.Hidden := AcceptTerms is true || BYOL is true
-        Conditions.Value := (AcceptTerms || BYOL ) ? true : undefined
-        Required = true
-        
-        [[[parameter AcceptTerms]]]
-        HideLabel = true
-        DefaultValue = true
-        Widget.Plugin = pico.form.BooleanCheckBox
-        Widget.Label = I Agree to Altair terms
-        Widget.FalseValue := undefined
-        Conditions.Hidden = true
-
+        Config.Template := "<table role=\"presentation\"><tr><td><p>OCS is a highly configurable open source workload manager. See the <a href=\"http://gridscheduler.sourceforge.net/\" target=\"_blank\">Grid Scheduler project site</a> for an overview.</p></td></tr></table>"
 
 [parameters Required Settings]
 Order = 10
@@ -326,6 +252,7 @@ Order = 10
 
 [parameters Network Attached Storage]
 Order = 15
+
 
     [[parameters Scheduler Mount]]
     Order = 5
@@ -435,7 +362,6 @@ Order = 20
         Description = The credentials for the cloud provider
         ParameterType = Cloud.Credentials
 
-
         [[[parameter ManagedIdentity]]]
         Label = Managed Id
         Description = Optionally assign an Azure user assigned managed identity to all nodes to access Azure resources using assigned roles.
@@ -452,8 +378,9 @@ Order = 20
         Config.Increment = 64
         DefaultValue = 0
 
-    [[parameters Grid Engine Settings ]]
-    Description = "Section for configuring Grid Engine"
+
+    [[parameters OCS Settings ]]
+    Description = "Section for configuring OCS"
     Order = 5
 
         
@@ -523,32 +450,6 @@ Order = 20
         ParameterType = Boolean
         Config.Label = Access execute nodes from the Internet
         Conditions.Excluded := UsePublicNetwork isnt true
-
-    [[parameters Altair Grid Engine]]
-    Description = Altair Version and Install
-
-        [[[parameter BYOL]]]
-        Label = Bring Your Own
-        Description = I've uploaded installers to Storage Account
-        DefaultValue = false
-        ParameterType = Boolean
-        Config.Label = I'm providing the Altair installer
-
-        [[[parameter GEVersion]]]
-        Label = GridEngine Version
-        DefaultValue = 8.6.7-demo
-        Description = Version e.g. 8.6.12
-        Conditions.Hidden := BYOL != true
-
-        [[[parameter GERoot]]]
-        Label = Installation Location
-        DefaultValue = /sched/ge/ge-8.6.7-demo
-        Description = Must be a shared Filesystem
-        Conditions.Hidden := BYOL != true
-
-        [[[parameter GERemotePrefix]]]
-        DefaultValue = aHR0cHM6Ly9maWxlcy51bml2YS5jb20vdWdlLzBiMzQ2NWExODA5ZmI3NjgwYTM2OTg2Y2NkMmE2MDEwLzguNi43LWRlbW8vP2lkPTU5MDc4NDgyMiZ1PW5vLXJlcGx5QG1pY3Jvc29mdC5jb20mZj0=
-        Conditions.Hidden := true
 
     [[parameters Node Health Checks]]
     Description = "Section for configuring Node Health Checks"

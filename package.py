@@ -16,14 +16,14 @@ CYCLECLOUD_API_VERSION = "8.0.1"
 
 def build_sdist() -> str:
     cmd = [sys.executable, "setup.py", "sdist"]
-    check_call(cmd, cwd=os.path.abspath("gridengine"))
-    # see below for more: cyclecloud*gridengine so we cover cyclecloud-gridengine and cyclecloud_gridengine
-    sdists = glob.glob("gridengine/dist/cyclecloud*gridengine-*.tar.gz")
+    check_call(cmd, cwd=os.path.abspath("ocs"))
+    # see below for more: cyclecloud*ocs so we cover cyclecloud-ocs and cyclecloud_ocs
+    sdists = glob.glob("ocs/dist/cyclecloud*ocs-*.tar.gz")
     assert len(sdists) == 1, "Found %d sdist packages, expected 1" % len(sdists)
     path = sdists[0]
     # at some point setuptools changed the name of the sdist package to use underscores instead of dashes.
-    if "/cyclecloud_gridengine-" in path:
-        fixed_path = path.replace("/cyclecloud_gridengine-", "/cyclecloud-gridengine-")
+    if "/cyclecloud_ocs-" in path:
+        fixed_path = path.replace("/cyclecloud_ocs-", "/cyclecloud-ocs-")
         os.rename(path, fixed_path)
         path = fixed_path
     fname = os.path.basename(path)
@@ -45,7 +45,7 @@ def get_cycle_libs(args: Namespace) -> List[str]:
     scalelib_url = "https://github.com/Azure/cyclecloud-scalelib/archive/{}.tar.gz".format(
         SCALELIB_VERSION
     )
-    cyclecloud_api_url = "https://github.com/Azure/cyclecloud-gridengine/releases/download/2.0.0/cyclecloud_api-8.0.1-py2.py3-none-any.whl"
+    cyclecloud_api_url = "https://github.com/Azure/cyclecloud-ocs/releases/download/2.0.0/cyclecloud_api-8.0.1-py2.py3-none-any.whl"
     to_download = {
         scalelib_file: (args.scalelib, scalelib_url),
         cyclecloud_api_file: (args.cyclecloud_api, cyclecloud_api_url),
@@ -103,14 +103,14 @@ def execute() -> None:
         os.makedirs("dist")
 
     tf = tarfile.TarFile.gzopen(
-        "dist/cyclecloud-gridengine-pkg-{}.tar.gz".format(version), "w"
+        "dist/cyclecloud-ocs-pkg-{}.tar.gz".format(version), "w"
     )
 
-    build_dir = tempfile.mkdtemp("cyclecloud-gridengine")
+    build_dir = tempfile.mkdtemp("cyclecloud-ocs")
 
     def _add(name: str, path: Optional[str] = None, mode: Optional[int] = None) -> None:
         path = path or name
-        tarinfo = tarfile.TarInfo("cyclecloud-gridengine/" + name)
+        tarinfo = tarfile.TarInfo("cyclecloud-ocs/" + name)
         tarinfo.size = os.path.getsize(path)
         tarinfo.mtime = int(os.path.getmtime(path))
         if mode:
@@ -140,7 +140,7 @@ def execute() -> None:
 
     _add("install.sh", mode=os.stat("install.sh")[0])
     _add("generate_autoscale_json.sh", mode=os.stat("generate_autoscale_json.sh")[0])
-    _add("logging.conf", "gridengine/conf/logging.conf")
+    _add("logging.conf", "ocs/conf/logging.conf")
 
 
 if __name__ == "__main__":

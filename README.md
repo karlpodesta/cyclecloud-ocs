@@ -1,25 +1,25 @@
-# CycleCloud GridEngine Project
+# CycleCloud OCS Project
 
-This project contains the GridEngine [cluster template file](templates/gridengine.txt).
-The other GridEngine artifacts, such as install scripts, are contained in the
+This project contains the OCS [cluster template file](templates/ocs.txt).
+The other OCS artifacts, such as install scripts, are contained in the
 CycleCloud product.  
 
 
 ## Configuring Resources
-The cyclecloud-gridengine application matches sge resources to azure cloud resources 
+The cyclecloud-ocs application matches sge resources to azure cloud resources 
 to provide rich autoscaling and cluster configuration tools. The application will be deployed
 automatically for clusters created via the CycleCloud UI or it can be installed on any 
-gridengine admin host on an existing cluster.
+ocs admin host on an existing cluster.
 
-### Installing or Upgrading cyclecloud-gridengine
+### Installing or Upgrading cyclecloud-ocs
 
-The cyclecloud-gridengine bundle will be available in [github](https://github.com/Azure/cyclecloud-gridengine/releases) 
+The cyclecloud-ocs bundle will be available in [github](https://github.com/Azure/cyclecloud-ocs/releases) 
 as a release artifact. Installing and upgrading will be the same process. 
 The application requires python3 with virtualenv.
 
 ```bash
-tar xzf cyclecloud-gridengine-pkg-*.tar.gz
-cd cyclecloud-gridengine
+tar xzf cyclecloud-ocs-pkg-*.tar.gz
+cd cyclecloud-ocs
 ./install.sh
 ./generate_autoscale_json.sh --username USER --password PASS --cluster-name CLUSTER --url https://cyclecloud-address:port
 ```
@@ -28,18 +28,18 @@ cd cyclecloud-gridengine
 
 The application parses the sge configuration each time it's called - jobs, queues, complexes.
 Information is provided in the stderr and stdout of the command as well as to a log file, both
-at configurable levels. All gridengine management commands with arguments are logged to file as well.
+at configurable levels. All ocs management commands with arguments are logged to file as well.
 
 | Description  |  Location |
 |---|---|
-| Autoscale Config  | /opt/cycle/gridengine/autoscale.json  |
+| Autoscale Config  | /opt/cycle/ocs/autoscale.json  |
 | Autoscale Log  | /opt/cycle/jetpack/logs/autoscale.log  |
 | qconf trace log  | /opt/cycle/jetpack/logs/qcmd.log  |
 
 
 ### SGE queues, hostgroups and parallel environments
 
-The cyclecloud-gridengine autoscale utility, `azge`, will add hosts to the cluster according
+The cyclecloud-ocs autoscale utility, `azge`, will add hosts to the cluster according
 to the cluster configuration. The autoscaling operations perform the following actions.
 
 1. Read the job resource request and find an appropriate VM to start
@@ -75,7 +75,7 @@ _autoscale.json_ to opt out.
 Here we opt out of placement groups for the _make_ pe:
 
 ```json
-"gridengine": {
+"ocs": {
     "pes": {
       "make": {
         "requires_placement_groups": false
@@ -86,7 +86,7 @@ Here we opt out of placement groups for the _make_ pe:
 ### CycleCloud Placement Groups
 CycleCloud placement groups map one-to-one to Azure VMSS with SinglePlacementGroup - VMs in a placementgroup
 share an Infiniband Fabric and share only with VMs within the placement group. 
-To intuitively preserve these silos, the placementgroups map 1:1 with gridengine parallel environment 
+To intuitively preserve these silos, the placementgroups map 1:1 with ocs parallel environment 
 as well.
 
 Specifying a parallel environment for a job will restrict the job to run in a placement group via smart 
@@ -96,7 +96,7 @@ _autoscale.json_ : `"required_placement_groups" : false`.
 ### Autoscale config
 
 This plugin will automatically scale the grid to meet the demands of the workload. 
-The _autoscale.json_ config file determines the behavior of the Grid Engine autoscaler.
+The _autoscale.json_ config file determines the behavior of the OCS autoscaler.
 
 * Set the cyclecloud connection details
 * Set the termination timer for idle nodes
@@ -109,12 +109,12 @@ The _autoscale.json_ config file determines the behavior of the Grid Engine auto
 | url  | String  | CC URL  |
 | username/password  | String  | CC Connection Details  |
 | cluster_name  | String  | CC Cluster Name  |
-| default_resources  | Map  | Link a node resource to a Grid Engine host resource for autoscale  |
+| default_resources  | Map  | Link a node resource to a OCS host resource for autoscale  |
 | idle_timeout  | Int  | Wait time before terminating idle nodes (s)  |
 | boot_timeout  | Int  | Wait time before terminating nodes during long configuration phases (s)  |
-| gridengine.relevant_complexes  | List (String)  | Grid engine complexes to consider in autoscaling e.g. slots, mem_free  |
-| gridengine.logging | File | Location of logging config file |
-| gridengine.pes | Struct | Specify behavior of PEs, e.g. _requires\_placement\_group = false_ |
+| ocs.relevant_complexes  | List (String)  | OCS complexes to consider in autoscaling e.g. slots, mem_free  |
+| ocs.logging | File | Location of logging config file |
+| ocs.pes | Struct | Specify behavior of PEs, e.g. _requires\_placement\_group = false_ |
 
 The autoscaling program will only consider *Relevant Resource*
 
@@ -125,7 +125,7 @@ requested by the jobs. We can add another dimension to autoscaling.
 
 Let's say we want to autoscale by the job resource request for `m_mem_free`.
 
-1. Add `m_mem_free` to the `gridengine.relevant_resources` in _autoscale.json_
+1. Add `m_mem_free` to the `ocs.relevant_resources` in _autoscale.json_
 2. Link `m_mem_free` to the node-level memory resource in _autoscale.json_
 
 These attributes can be references with `node.*` as the _value_ in _default/_resources_.
@@ -241,7 +241,7 @@ the hosts added to them. You can limit what kinds of hosts can be added to which
 constraints. Set a constraint based on the node properties. 
 
 ```json
-"gridengine": {
+"ocs": {
     "hostgroups": {
       "@mpi": {
         "constraints": {
@@ -264,12 +264,12 @@ constraints. Set a constraint based on the node properties.
 ## azge
 This package comes with a command-line, _azge_. This program should be used
 to perform autoscaling and has broken out all the subprocesses under autoscale.
-These commands rely on the gridengine environment variables to be set - you must be
+These commands rely on the ocs environment variables to be set - you must be
 able to call `qconf` and `qsub` from the same profile where `azge` is called.
 
 | _azge_ commands  | Description  |
 |---|---|
-| validate | Checks for known configuration errors in the autoscaler or gridengine 
+| validate | Checks for known configuration errors in the autoscaler or ocs 
 | jobs | Shows all jobs in the queue 
 | buckets | Shows available resource pools for autoscaling 
 | nodes | Shows cluster hosts and properties 
@@ -288,34 +288,34 @@ to understand the autoscale behavior.
 1. Run `azge autoscale` to kickoff the node allocation process, or add nodes which are ready to join.
 
 Then, when these commands are behaving as expected, enable ongoing autoscale by adding the `azge autoscale`
-command to the root crontab. (Souce the gridengine environment variables)
+command to the root crontab. (Souce the ocs environment variables)
 
 ```cron
-* * * * * . $SGE_ROOT/common/settings.sh && /usr/local/bin/azge autoscale -c /opt/cycle/gridengine/autoscale.json
+* * * * * . $SGE_ROOT/common/settings.sh && /usr/local/bin/azge autoscale -c /opt/cycle/ocs/autoscale.json
 ```
 
 ## Creating a hybrid cluster
 
 Cyclecloud will support the scenario of bursting to the cloud. The base configuration assumes that the `$SGE_ROOT`
-directory is available to the cloud nodes. This assumption can be relaxed by setting `gridengine.shared.spool = false`, 
-`gridengine.shared.bin = false` and installing GridEngine locally. 
+directory is available to the cloud nodes. This assumption can be relaxed by setting `ocs.shared.spool = false`, 
+`ocs.shared.bin = false` and installing OCS locally. 
 For a simple case, you should provide a filesystem that can be mounted by the execute nodes which contains the `$SGE_ROOT` directory
 and configure that mount in the optional settings. When the dependency of the sched and shared directories are released, you 
 can shut down the scheduler node that is part of the cluster by-default and use the configurations 
 from the external filesystem.
 
-1. Create a new gridengine cluster
+1. Create a new ocs cluster
 1. Disable return proxy
 1. Replace /sched and /shared with external filesystems
 1. Save the cluster
 1. Remove the scheduler node
-1. Configure cyclecloud-gridengine with _autoscale.json_ to use the new cluster
+1. Configure cyclecloud-ocs with _autoscale.json_ to use the new cluster
 
-## Using Univa Grid Engine in CycleCloud
+## Using Univa OCS in CycleCloud
 
-CycleCloud project for GridEngine uses _sge-2011.11_ by default. You may use your own
-[Univa GridEngine](http://www.univa.com/products/) installers according to your Univa license agreement.  
-This section documents how to use Univa GridEngine with the CycleCloud GridEngine project.
+CycleCloud project for OCS uses _sge-2011.11_ by default. You may use your own
+[Univa OCS](http://www.univa.com/products/) installers according to your Univa license agreement.  
+This section documents how to use Univa OCS with the CycleCloud OCS project.
 
 ### Prerequisites
 
@@ -336,19 +336,19 @@ binaries to the storage account that CycleCloud uses.
 
 ```bash
 
-$ azcopy cp ge-8.6.12-bin-lx-amd64.tar.gz https://<storage-account-name>.blob.core.windows.net/cyclecloud/gridengine/blobs/
-$ azcopy cp ge-8.6.12-common.tar.gz https://<storage-account-name>.blob.core.windows.net/cyclecloud/gridengine/blobs/
+$ azcopy cp ge-8.6.12-bin-lx-amd64.tar.gz https://<storage-account-name>.blob.core.windows.net/cyclecloud/ocs/blobs/
+$ azcopy cp ge-8.6.12-common.tar.gz https://<storage-account-name>.blob.core.windows.net/cyclecloud/ocs/blobs/
 ```
 ### Modifying configs to the cluster template
 
-Make a local copy of the gridengine template and modify it to use the UGE installers
+Make a local copy of the ocs template and modify it to use the UGE installers
 instead of the default.
 
 ```bash
-wget https://raw.githubusercontent.com/Azure/cyclecloud-gridengine/master/templates/gridengine.txt
+wget https://raw.githubusercontent.com/Azure/cyclecloud-ocs/master/templates/ocs.txt
 ```
 
-In the _gridengine.txt_ file, locate the first occurrence of `[[[configuration]]]` and
+In the _ocs.txt_ file, locate the first occurrence of `[[[configuration]]]` and
 insert text such that it matches the snippet below.  This file is not sensitive to 
 indentation.
 
@@ -356,7 +356,7 @@ indentation.
 > The details in the configuration, particularly version, should match the installer file name.
 
 ```ini
-[[[configuration gridengine]]]
+[[[configuration ocs]]]
     make = ge
     version = 8.6.12-demo
     root = /sched/ge/ge-8.6.12-demo
@@ -387,7 +387,7 @@ indentation.
 
 ```
 
-These configs will override the default gridengine version and installation location, as the cluster starts.  
+These configs will override the default ocs version and installation location, as the cluster starts.  
 It is not safe to move off of the `/sched` as it's a specifically shared nfs location in the cluster.
 
 ### Import the cluster template file
@@ -395,14 +395,14 @@ It is not safe to move off of the `/sched` as it's a specifically shared nfs loc
 Using the cyclecloud cli, import a cluster template from the new cluster template file.
 
 ```bash
-cyclecloud import_cluster UGE -c 'grid engine' -f gridengine.txt -t
+cyclecloud import_cluster UGE -c 'grid engine' -f ocs.txt -t
 ```
 
 Similar to this [tutorial](https://docs.microsoft.com/en-us/azure/cyclecloud/tutorials/modify-cluster-template) in the documentation, new UGE cluster type is now available in the *Create Cluster* menu in the UI.
 
 Configure and create the cluster in the UI, save it, and start it.
 
-### Verify GridEngine version
+### Verify OCS version
 
 As an example, the cluster that has been configured and started is called "test-uge".
 When the master node reaches the _Started_ state (green), log into the node with 
