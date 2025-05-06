@@ -35,7 +35,7 @@ Autoscale = $Autoscale
         # May be used to identify the ID in cluster-init scripts
         cluster.identities.default = $ManagedIdentity
 
-        [[[cluster-init cyclecloud/ocs:default]]]
+        [[[cluster-init ocs:default:1.0.0]]]
         Optional = true
 
         [[[volume boot]]]
@@ -72,7 +72,7 @@ Autoscale = $Autoscale
         cyclecloud.mounts.nfs_sched.disabled = true
         cyclecloud.mounts.nfs_shared.disabled = ${NFSType != "External"}
 
-        [[[cluster-init cyclecloud/ocs:scheduler]]]
+        [[[cluster-init ocs:scheduler:1.0.0]]]
 
         [[[network-interface eth0]]]
         AssociatePublicIpAddress = $UsePublicNetwork
@@ -124,7 +124,7 @@ Autoscale = $Autoscale
         ocs.autoscale = $Autoscale
         ocs.colocated = true
 
-        [[[cluster-init cyclecloud/ocs:execute]]]
+        [[[cluster-init ocs:execute:1.0.0]]]
 
         [[[network-interface eth0]]]
         AssociatePublicIpAddress = $ExecuteNodesPublic
@@ -143,7 +143,7 @@ Autoscale = $Autoscale
         [[[configuration]]]
         ocs.autoscale = $Autoscale
 
-        [[[cluster-init cyclecloud/ocs:execute]]]
+        [[[cluster-init ocs:execute:1.0.0]]]
 
         [[[network-interface eth0]]]
         AssociatePublicIpAddress = $ExecuteNodesPublic
